@@ -1,12 +1,11 @@
-import { Slot } from "expo-router";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { Stack } from "expo-router";
 
-const RootLayout = () => {
+const Layout = () => {
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <Slot />
-    </SafeAreaView>
+    <Stack>
+      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+    </Stack>
   );
 };
 
-export default RootLayout;
+export default Layout;

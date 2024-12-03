@@ -1,11 +1,14 @@
 import {
   Image,
+  Keyboard,
   KeyboardAvoidingView,
+  Platform,
   Text,
   TextInput,
   TouchableWithoutFeedback,
   View,
 } from "react-native";
+import { InputFieldProps } from "@/types/type";
 
 const InputField = ({
   label,
@@ -17,9 +20,9 @@ const InputField = ({
   iconStyle,
   className,
   ...props
-}) => (
-  <KeyboardAvoidingView>
-    <TouchableWithoutFeedback>
+}: InputFieldProps) => (
+  <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"}>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View className="my-2 w-full">
         <Text className={`text-lg font-JakartaSemiBold mb-3 ${labelStyle}`}>
           {label}
