@@ -57,7 +57,14 @@ const SignUp = () => {
 
       if (completeSignUp.status === "complete") {
         // TODO: Create a database user!
-        await fetchAPI("/(api)/user", {});
+        await fetchAPI("/(api)/user", {
+          method: "POST",
+          body: JSON.stringify({
+            name: form.name,
+            email: form.email,
+            clerkId: completeSignUp.createdUserId,
+          }),
+        });
         await setActive({ session: completeSignUp.createdSessionId });
         setVerification({ ...verification, state: "success" });
       } else {

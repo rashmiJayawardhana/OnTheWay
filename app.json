@@ -19,18 +19,20 @@
     },
     "web": {
       "bundler": "metro",
-      "output": "static",
+      "output": "server",
       "favicon": "./assets/images/favicon.png"
     },
+    "splash": {
+      "image": "./assets/images/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#2f80ed",
+      "imageWidth": 200
+    },
     "plugins": [
-      "expo-router",
       [
-        "expo-splash-screen",
+        "expo-router",
         {
-          "image": "./assets/images/splash.png",
-          "imageWidth": 200,
-          "resizeMode": "contain",
-          "backgroundColor": "#2f80ed"
+          "origin": "https://ontheway.com/"
         }
       ]
     ],
