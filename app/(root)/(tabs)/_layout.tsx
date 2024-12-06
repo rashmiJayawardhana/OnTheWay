@@ -28,7 +28,7 @@ const TabIcon = ({
 
 const Layout = () => (
   <Tabs
-    initialRouteName="index" // Setting the initial route for the tabs
+    initialRouteName="home" // Setting the initial route for the tabs
     screenOptions={{
       tabBarActiveTintColor: "white",
       tabBarInactiveTintColor: "white",
