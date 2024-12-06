@@ -13,7 +13,7 @@ export async function POST(request: Request) {
     }
 
     const response = await sql`
-        INSERT INTO users (name, email, clerkId) VALUES (${name},${email},${clerkId})`;
+        INSERT INTO users (name, email, clerk_id) VALUES (${name},${email},${clerkId})`;
 
     return new Response(JSON.stringify({ data: response }), { status: 201 });
   } catch (error) {

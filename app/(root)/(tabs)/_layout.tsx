@@ -2,12 +2,13 @@ import { Tabs } from "expo-router";
 import { Image, ImageSourcePropType, View } from "react-native";
 import { icons } from "@/constants";
 
+// Component to render the tab icon with custom styles for focused and unfocused states
 const TabIcon = ({
-  source,
-  focused,
+  source, // The image source for the icon
+  focused, // Boolean indicating if the tab is currently focused/selected
 }: {
-  source: ImageSourcePropType;
-  focused: boolean;
+  source: ImageSourcePropType; // Type definition for the image source
+  focused: boolean; // Type definition for the focused state
 }) => (
   <View
     className={`flex flex-row justify-center items-center rounded-full ${focused ? "bg-general-300" : ""}`}
@@ -27,7 +28,7 @@ const TabIcon = ({
 
 const Layout = () => (
   <Tabs
-    initialRouteName="index"
+    initialRouteName="index" // Setting the initial route for the tabs
     screenOptions={{
       tabBarActiveTintColor: "white",
       tabBarInactiveTintColor: "white",
@@ -49,12 +50,12 @@ const Layout = () => (
     }}
   >
     <Tabs.Screen
-      name="home"
+      name="home" // Route name for the Home screen
       options={{
         title: "Home",
         headerShown: false,
         tabBarIcon: ({ focused }) => (
-          <TabIcon focused={focused} source={icons.home} />
+          <TabIcon focused={focused} source={icons.home} /> // Custom tab icon
         ),
       }}
     />
