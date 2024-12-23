@@ -34,7 +34,8 @@
         {
           "origin": "https://ontheway.com/"
         }
-      ]
+      ],
+      "expo-font"
     ],
     "experiments": {
       "typedRoutes": true
