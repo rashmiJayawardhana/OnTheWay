@@ -11,24 +11,25 @@ const SignIn = () => {
   const { signIn, setActive, isLoaded } = useSignIn();
   const router = useRouter();
   const [form, setForm] = useState({
-    email: "",
+    name: "",
     password: "",
   });
 
   const onSignInPress = useCallback(async () => {
-    if (!isLoaded) {
-      return;
-    }
+    if (!isLoaded) return;
 
     try {
       const signInAttempt = await signIn.create({
-        identifier: form.email,
+        identifier: form.name,
         password: form.password,
       });
 
       if (signInAttempt.status === "complete") {
         await setActive({ session: signInAttempt.createdSessionId });
-        router.replace("/");
+        router.replace({
+          pathname: "/",
+          params: { username: form.name },
+        });
       } else {
         // See https://clerk.com/docs/custom-flows/error-handling
         // for more info on error handling
@@ -37,7 +38,7 @@ const SignIn = () => {
     } catch (err: any) {
       console.error(JSON.stringify(err, null, 2));
     }
-  }, [isLoaded, form.email, form.password]);
+  }, [isLoaded, form.name, form.password]);
 
   return (
     <ScrollView className="flex-1 bg-white">
@@ -50,11 +51,11 @@ const SignIn = () => {
         </View>
         <View className="p-5">
           <InputField
-            label="Email"
-            placeholder="Enter Your Email"
-            icon={icons.email}
-            value={form.email}
-            onChangeText={(value) => setForm({ ...form, email: value })}
+            label="Username"
+            placeholder="Enter Your Username"
+            icon={icons.person}
+            value={form.name}
+            onChangeText={(value) => setForm({ ...form, name: value })}
           />
           <InputField
             label="Password"

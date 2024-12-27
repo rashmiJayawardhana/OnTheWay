@@ -3,10 +3,13 @@
   "compilerOptions": {
     "jsx": "react-native",
     "strict": true,
+    "esModuleInterop": true,          // Ensures compatibility with CommonJS modules.
+    "skipLibCheck": true,             // Skips type checking of declaration files in `node_modules`.
+    "moduleResolution": "node",       // Correctly resolves modules like `zustand` from `node_modules`.
+    "target": "ES6",                  // Sets the output target to ES6.
+    "lib": ["ES6", "DOM"],            // Includes DOM typings for React Native.
     "paths": {
-      "@/*": [
-        "./*"
-      ]
+      "@/*": ["./*"]
     }
   },
   "include": [

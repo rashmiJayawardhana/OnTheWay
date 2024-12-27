@@ -28,6 +28,7 @@ const SignUp = () => {
     if (!isLoaded) return;
     try {
       await signUp.create({
+        username: form.name,
         emailAddress: form.email,
         password: form.password,
       });
@@ -88,8 +89,8 @@ const SignUp = () => {
         </View>
         <View className="p-5">
           <InputField
-            label="Name"
-            placeholder="Enter name"
+            label="Username"
+            placeholder="Enter username"
             icon={icons.person}
             value={form.name}
             onChangeText={(value) => setForm({ ...form, name: value })}
