@@ -9,28 +9,30 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
 # Features
 
 * Authentication
-  * Secure sign-up and sign-in using Clerk.
-  * Google OAuth integration.
+  * Secure user authentication using Clerk.
+  * Google OAuth integration for easy access.
 
 * Flight Information
   * Real-time flight data fetched from OpenSky API.
-  * Flight details include origin, altitude, speed, and status (in-flight or on-ground).
+  * Detailed flight information, including origin, altitude, speed, and status (in-flight or on-ground).
 
 * Pagination and Navigation
-  * Smooth navigation using expo-router.
-  * Pagination support for viewing large datasets efficiently.
+  * Smooth and efficient navigation powered by expo-router.
+  * Pagination support for seamless browsing of large flight datasets.
 
 * Custom UI Components
-  * Tailwind CSS styling for responsive and modern design.
-  * Reusable components like InputField and CustomButton.
+  * Modern and responsive design implemented with Tailwind CSS.
+  * Reusable components like InputField and CustomButton for consistency and ease of use.
   
-* Data Management
-  * State management with Zustand.
-  * Secure token storage using Expo SecureStore.
+* State Management
+  * Optimized state management using Zustand for a predictable and scalable application state.
 
-* Database
-  * PostgreSQL database integration for user data storage.
-  * Neon serverless for scalable and reliable database access.
+* Data Security and Storage
+  * Secure token management and storage with Expo SecureStore.
+
+* Database Integration
+  * PostgreSQL database for robust and reliable user data management.
+  * Neon serverless technology for scalable and efficient database access.
 
 
 ## Get started
