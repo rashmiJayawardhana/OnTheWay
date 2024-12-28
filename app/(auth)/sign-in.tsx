@@ -1,7 +1,7 @@
 import { Alert, Image, ScrollView, Text, View } from "react-native";
 import { icons, images } from "@/constants";
 import InputField from "@/components/InputField";
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 import CustomButton from "@/components/CustomButton";
 import { Link, useRouter } from "expo-router";
 import OAuth from "@/components/OAuth";

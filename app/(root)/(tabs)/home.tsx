@@ -101,17 +101,15 @@ export default function Home() {
                   {item[1] || "Unknown Flight"}
                 </Text>
               </View>
-              {/* Display flight name (like SWR24C) */}
+              {/* Display flight name*/}
               <Text>Origin: {item[2] || "Unknown"}</Text>
-              {/* Display origin (like Switzerland) */}
+              {/* Display origin*/}
               <Text>Status: {item[9] ? "In Flight" : "On Ground"}</Text>
-              {/* Check if flight is in flight or on ground */}
-              <Text>
-                Altitude: {item[5] || "N/A"} meters
-              </Text> {/* Altitude */}
-              <Text>
-                Speed: {item[10] || "N/A"} km/h
-              </Text> {/* Speed */}
+              {/* Flight status */}
+              <Text>Altitude: {item[5] || "N/A"} meters</Text>
+              {/* Altitude */}
+              <Text>Speed: {item[10] || "N/A"} km/h</Text>
+              {/* Speed */}
             </View>
           </TouchableOpacity>
         )}
