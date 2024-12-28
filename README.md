@@ -8,8 +8,6 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
 
 # Features
 
-## **Core Features**
-
 * Authentication
   * Secure sign-up and sign-in using Clerk.
   * Google OAuth integration.
