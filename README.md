@@ -1,9 +1,39 @@
 # OnTheWay
-A Full Stack React Native App with Payments | PostgreSQL, TypeScript, Stripe, Tailwind CSS
+A transportation mobile application built with React Native, designed to provide users with seamless authentication, item navigation, and interactive features.
 
 # Welcome to your Expo app 👋
 
 This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+
+
+## Features
+
+# Core Features
+
+* Authentication
+  * Secure sign-up and sign-in using Clerk.
+  * Google OAuth integration.
+
+* Flight Information
+  * Real-time flight data fetched from OpenSky API.
+  * Flight details include origin, altitude, speed, and status (in-flight or on-ground).
+
+* Pagination and Navigation
+  * Smooth navigation using expo-router.
+  * Pagination support for viewing large datasets efficiently.
+
+* Custom UI Components
+  * Tailwind CSS styling for responsive and modern design.
+  * Reusable components like InputField and CustomButton.
+  
+* Data Management
+  * State management with Zustand.
+  * Secure token storage using Expo SecureStore.
+
+* Database
+  * PostgreSQL database integration for user data storage.
+  * Neon serverless for scalable and reliable database access.
+
 
 ## Get started
 
