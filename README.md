@@ -1,5 +1,5 @@
 # OnTheWay
-A transportation mobile application built with React Native, designed to provide users with seamless authentication, item navigation, and interactive features.
+A full-stack React Native application for flight tracking and travel management. Built with React Native, Expo, PostgreSQL, Zustand, Clerk for authentication, and styled using Tailwind CSS. Includes seamless authentication, real-time data, and a user-friendly interface for an enhanced travel experience. 🌍✈️
 
 # Welcome to your Expo app 👋
 
