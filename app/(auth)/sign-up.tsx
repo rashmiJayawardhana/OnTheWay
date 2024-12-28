@@ -197,7 +197,10 @@ const SignUp = () => {
               title="Browse Home"
               onPress={() => {
                 setShowSuccessModal(false);
-                router.push(`/(root)/(tabs)/home`);
+                router.push({
+                  pathname: `/(root)/(tabs)/home`,
+                  params: { username: form.name }, // Pass username as a parameter
+                });
               }}
               className="mt-5"
             />
