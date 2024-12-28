@@ -6,9 +6,9 @@ A transportation mobile application built with React Native, designed to provide
 This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
 
 
-## Features
+# Features
 
-# Core Features
+Core Features
 
 * Authentication
   * Secure sign-up and sign-in using Clerk.
