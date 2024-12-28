@@ -87,6 +87,7 @@ declare interface InputFieldProps extends TextInputProps {
   inputStyle?: string;
   iconStyle?: string;
   className?: string;
+  error?: string; // Add this to include an optional error property
 }
 
 declare interface PaymentProps {

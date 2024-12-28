@@ -31,7 +31,8 @@ const useStore = create<StoreState>((set) => ({
 }));
 
 export default function Home() {
-  const { username = "User" } = useLocalSearchParams(); // Extract username from params
+  const { username } = useLocalSearchParams(); // Extract username from params
+  console.log("Username:", username);
   const [items, setItems] = useState<any[]>([]); // All items
   const [loading, setLoading] = useState(true); // Loading state
   const [page, setPage] = useState(1); // Current page
@@ -66,8 +67,8 @@ export default function Home() {
 
   // Handle Load More
   const loadMore = () => {
-    if (currentItems.length < items.length) {
-      setPage((prevPage) => prevPage + 1); // Increment the page
+    if (page * itemsPerPage < items.length) {
+      setPage((prevPage) => prevPage + 1);
     }
   };
 
@@ -87,7 +88,7 @@ export default function Home() {
   };
 
   return (
-    <SafeAreaView className="bg-general-500">
+    <SafeAreaView className="bg-general-500 flex-1">
       {/* List of flights */}
       <FlatList
         data={currentItems}
@@ -96,30 +97,31 @@ export default function Home() {
             <View className="px-5 py-3 bg-gray-200 mb-5 rounded-lg">
               <View className="flex flex-row items-center">
                 <MaterialIcons name="flight" size={20} color="black" />
-                <Text className="font-bold">{item[1] || "Unknown Flight"}</Text>
+                <Text className="font-bold ml-2">
+                  {item[1] || "Unknown Flight"}
+                </Text>
               </View>
               {/* Display flight name (like SWR24C) */}
-              <Text>Origin: {item[2]}</Text>
+              <Text>Origin: {item[2] || "Unknown"}</Text>
               {/* Display origin (like Switzerland) */}
               <Text>Status: {item[9] ? "In Flight" : "On Ground"}</Text>
               {/* Check if flight is in flight or on ground */}
               <Text>
-                Altitude: {item[5]} meters
+                Altitude: {item[5] || "N/A"} meters
               </Text> {/* Altitude */}
               <Text>
-                Speed: {item[10]} km/h
+                Speed: {item[10] || "N/A"} km/h
               </Text> {/* Speed */}
             </View>
           </TouchableOpacity>
         )}
-        keyExtractor={(item) => item[0]} // Use the flight ID as key
+        keyExtractor={(item) => item[0]?.toString() || Math.random().toString()} // Use the flight ID as key
         keyboardShouldPersistTaps="handled"
         ListHeaderComponent={() => (
           <>
             <View className="flex flex-row items-center justify-between my-5 mx-5">
               <Text className="text-2xl capitalize font-JakartaExtraBold">
-                Welcome{", "}
-                {username}!{""} 👋
+                Welcome, {username}! 👋
               </Text>
               <TouchableOpacity
                 onPress={handleSignOut}
@@ -139,10 +141,10 @@ export default function Home() {
                 <Image
                   source={images.noResult}
                   className="w-40 h-40"
-                  alt="No recent rides found"
+                  alt="No recent flights found"
                   resizeMode="contain"
                 />
-                <Text className="text-sm">No data found</Text>
+                <Text className="text-sm">No flights found</Text>
               </>
             )}
           </View>

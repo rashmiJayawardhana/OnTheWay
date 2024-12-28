@@ -8,23 +8,39 @@ import OAuth from "@/components/OAuth";
 import { useSignUp } from "@clerk/clerk-expo";
 import { ReactNativeModal } from "react-native-modal";
 import { fetchAPI } from "@/lib/fetch";
+import useForm from "@/hooks/useForm";
 
 const SignUp = () => {
   const { isLoaded, signUp, setActive } = useSignUp();
   const [showSuccessModal, setShowSuccessModal] = useState(false);
-
-  const [form, setForm] = useState({
-    name: "",
-    email: "",
-    password: "",
-  });
   const [verification, setVerification] = useState({
     state: "default",
     error: "",
     code: "",
   });
 
+  const validationRules = {
+    name: { required: true, errorMessage: "Username is required" },
+    email: {
+      required: true,
+      pattern: /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
+      errorMessage: "Invalid email address",
+    },
+    password: {
+      required: true,
+      minLength: 6,
+      errorMessage: "Password must be at least 6 characters",
+    },
+  };
+
+  const { form, errors, handleInputChange, validateForm } = useForm(
+    { name: "", email: "", password: "" },
+    validationRules,
+  );
+
   const onSignUpPress = async () => {
+    if (!validateForm()) return;
+
     if (!isLoaded) return;
     try {
       await signUp.create({
@@ -69,8 +85,6 @@ const SignUp = () => {
         });
       }
     } catch (err: any) {
-      // See https://clerk.com/docs/custom-flows/error-handling
-      // for more info on error handling
       setVerification({
         ...verification,
         error: err.errors[0].longMessage,
@@ -82,8 +96,8 @@ const SignUp = () => {
     <ScrollView className="flex-1 bg-white">
       <View className="flex-1 bg-white">
         <View className="relative w-full h-[250px]">
-          <Image source={images.signUpCar} className="z-0 w-full h-[250px]" />
-          <Text className="text-2xl text-black font-JakartaSemiBold absolute bottom-5 left-5">
+          <Image source={images.flight2} className="z-0 w-full h-[250px]" />
+          <Text className="text-2xl text-white font-JakartaSemiBold absolute bottom-5 left-5">
             Create Your Account
           </Text>
         </View>
@@ -93,7 +107,8 @@ const SignUp = () => {
             placeholder="Enter username"
             icon={icons.person}
             value={form.name}
-            onChangeText={(value) => setForm({ ...form, name: value })}
+            onChangeText={(value) => handleInputChange("name", value)}
+            error={errors.name}
           />
           <InputField
             label="Email"
@@ -101,7 +116,8 @@ const SignUp = () => {
             icon={icons.email}
             textContentType="emailAddress"
             value={form.email}
-            onChangeText={(value) => setForm({ ...form, email: value })}
+            onChangeText={(value) => handleInputChange("email", value)}
+            error={errors.email}
           />
           <InputField
             label="Password"
@@ -110,7 +126,8 @@ const SignUp = () => {
             secureTextEntry={true}
             textContentType="password"
             value={form.password}
-            onChangeText={(value) => setForm({ ...form, password: value })}
+            onChangeText={(value) => handleInputChange("password", value)}
+            error={errors.password}
           />
           <CustomButton
             title="Sign Up"

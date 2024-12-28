@@ -31,6 +31,10 @@ import onboarding1 from "@/assets/images/onboarding1.png";
 import onboarding2 from "@/assets/images/onboarding2.png";
 import onboarding3 from "@/assets/images/onboarding3.png";
 import signUpCar from "@/assets/images/signup-car.png";
+import flight1 from "@/assets/images/flight1.jpeg";
+import flight2 from "@/assets/images/flight2.jpeg";
+import flight3 from "@/assets/images/flight3.png";
+import flight4 from "@/assets/images/flight4.jpg";
 
 export const images = {
   onboarding1,
@@ -41,6 +45,10 @@ export const images = {
   check,
   noResult,
   message,
+  flight1,
+  flight2,
+  flight3,
+  flight4,
 };
 
 export const icons = {
@@ -74,24 +82,23 @@ export const icons = {
 export const onboarding = [
   {
     id: 1,
-    title: "The perfect ride is just a tap away!",
-    description:
-      "Your journey begins with Ryde. Find your ideal ride effortlessly.",
-    image: images.onboarding1,
+    title: "Track Real-Time Flights!",
+    description: "Stay updated with live flight data around the globe.",
+    image: images.flight3,
   },
   {
     id: 2,
-    title: "Best car in your hands with Ryde",
+    title: "Discover Flights Easily!",
     description:
-      "Discover the convenience of finding your perfect ride with Ryde",
-    image: images.onboarding2,
+      "Explore the convenience of finding and tracking your perfect flight.",
+    image: images.flight1,
   },
   {
     id: 3,
-    title: "Your ride, your way. Let's go!",
+    title: "Your flight, your way. Let's go!",
     description:
       "Enter your destination, sit back, and let us take care of the rest.",
-    image: images.onboarding3,
+    image: images.flight4,
   },
 ];
 

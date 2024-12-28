@@ -10,6 +10,10 @@ import {
 } from "react-native";
 import { InputFieldProps } from "@/types/type";
 
+interface EnhancedInputFieldProps extends InputFieldProps {
+  error?: string;
+}
+
 const InputField = ({
   label,
   labelStyle,
@@ -19,8 +23,9 @@ const InputField = ({
   inputStyle,
   iconStyle,
   className,
+  error,
   ...props
-}: InputFieldProps) => (
+}: EnhancedInputFieldProps) => (
   <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"}>
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View className="my-2 w-full">
@@ -39,6 +44,7 @@ const InputField = ({
             {...props}
           />
         </View>
+        {error && <Text className="text-red-500 text-sm mt-1">{error}</Text>}
       </View>
     </TouchableWithoutFeedback>
   </KeyboardAvoidingView>
