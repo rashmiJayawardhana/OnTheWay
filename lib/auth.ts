@@ -1,6 +1,5 @@
 import * as SecureStore from "expo-secure-store";
 import * as Linking from "expo-linking";
-
 import { fetchAPI } from "@/lib/fetch";
 
 export const tokenCache = {
@@ -21,53 +20,61 @@ export const tokenCache = {
   },
   async saveToken(key: string, value: string) {
     try {
-      return SecureStore.setItemAsync(key, value);
+      await SecureStore.setItemAsync(key, value);
     } catch (err) {
-      return;
+      console.error("SecureStore save item error:", err);
     }
   },
 };
 
 export const googleOAuth = async (startOAuthFlow: any) => {
   try {
-    const { createdSessionId, setActive, signUp } = await startOAuthFlow({
-      redirectUrl: Linking.createURL("/(root)/(tabs)/home"),
+    // Start the OAuth flow
+    const { createdSessionId, setActive, signUp, user } = await startOAuthFlow({
+      redirectUrl: Linking.createURL("/(root)/(tabs)/home"), // Ensure proper redirect
     });
 
-    if (createdSessionId) {
-      if (setActive) {
-        await setActive({ session: createdSessionId });
+    if (createdSessionId && setActive) {
+      // Activate the session
+      await setActive({ session: createdSessionId });
 
-        if (signUp.createdUserId) {
-          await fetchAPI("/(api)/user", {
-            method: "POST",
-            body: JSON.stringify({
-              name: `${signUp.firstName} ${signUp.lastName}`,
-              email: signUp.emailAddress,
-              clerkId: signUp.createdUserId,
-            }),
-          });
-        }
-
-        return {
-          success: true,
-          code: "success",
-          message: "You have successfully signed in with Google",
-        };
+      // If a new user is created, optionally send user data to your API
+      if (signUp?.createdUserId) {
+        const fullName = user?.username?.trim() || "User"; // Use username or fallback to "Guest"
+        await fetchAPI("/(api)/user", {
+          method: "POST",
+          body: JSON.stringify({
+            name: fullName,
+            email: user?.emailAddress || "",
+            clerkId: signUp.createdUserId,
+          }),
+        });
       }
+
+      return {
+        success: true,
+        code: "success",
+        message: "You have successfully signed in with Google",
+        user: {
+          name: user?.username || user?.emailAddress || "User",
+          email: user?.emailAddress,
+          id: user?.id,
+        },
+      };
     }
 
+    // Return failure message if session activation or user data is missing
     return {
       success: false,
-      code: "success",
-      message: "An error occurred while signing in with Google",
+      code: "error",
+      message: "Failed to sign in with Google. Please try again.",
     };
   } catch (err: any) {
-    console.error(err);
+    console.error("Google OAuth Error:", err);
     return {
       success: false,
-      code: err.code,
-      message: err?.errors[0]?.longMessage,
+      code: err?.code || "error",
+      message: err?.errors?.[0]?.longMessage || "An unexpected error occurred.",
     };
   }
 };

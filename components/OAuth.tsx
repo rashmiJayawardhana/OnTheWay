@@ -1,7 +1,6 @@
 import { useOAuth } from "@clerk/clerk-expo";
 import { router } from "expo-router";
 import { Alert, Image, Text, View } from "react-native";
-
 import CustomButton from "@/components/CustomButton";
 import { icons } from "@/constants";
 import { googleOAuth } from "@/lib/auth";
@@ -10,14 +9,32 @@ const OAuth = () => {
   const { startOAuthFlow } = useOAuth({ strategy: "oauth_google" });
 
   const handleGoogleSignIn = async () => {
-    const result = await googleOAuth(startOAuthFlow);
+    try {
+      // Start OAuth flow and handle the result
+      const result = await googleOAuth(startOAuthFlow);
 
-    if (result.code === "session_exists" || result.code === "success") {
-      Alert.alert("Success", "Session exists. Redirecting to home screen.");
-      router.replace("/(root)/(tabs)/home");
+      // Debugging log
+      console.log("OAuth Result:", result);
+
+      if (result.success && result.user) {
+        const username = result.user.name || "User"; // Fallback if name is not available
+
+        Alert.alert("Success", "Redirecting to home screen.");
+        // Redirect to home screen
+        router.replace({
+          pathname: "/(root)/(tabs)/home",
+          params: { username },
+        });
+      } else {
+        Alert.alert(
+          "Error",
+          result.message || "Sign-in failed. Please try again.",
+        );
+      }
+    } catch (error) {
+      console.error("Google Sign-In Error:", error);
+      Alert.alert("Error", "An unexpected error occurred. Please try again.");
     }
-
-    Alert.alert(result.success ? "Success" : "Error", result.message);
   };
 
   return (
