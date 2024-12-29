@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { router, useLocalSearchParams } from "expo-router";
 import {
   FlatList,
@@ -8,9 +8,16 @@ import {
   ActivityIndicator,
   TouchableOpacity,
   Alert,
+  TextInput,
+  Platform,
+  Button,
+  Keyboard,
+  NativeSyntheticEvent,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { create } from "zustand";
+import { DateTimePickerEvent } from "@react-native-community/datetimepicker";
+import DateTimePicker from "@react-native-community/datetimepicker";
 import { icons, images } from "@/constants";
 import { useAuth } from "@clerk/clerk-expo";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
@@ -30,44 +37,127 @@ const useStore = create<StoreState>((set) => ({
     })),
 }));
 
+// Define TypeScript interfaces for types
+interface Flight {
+  num: string;
+  departure?: { [key: string]: string }[];
+  arrival?: { [key: string]: string }[];
+}
+
+const itemImages = [
+  images.flight13,
+  images.flight12,
+  images.flight11,
+  images.flight14,
+  images.flight15,
+  images.flight16,
+  images.flight17,
+  images.flight18,
+  images.flight19,
+  images.flight20,
+  images.flight21,
+  images.flight22,
+  images.flight23,
+  images.flight24,
+  images.flight25,
+];
+
+// Function to get an image index based on flight number
+const getFlightImageIndex = (flightNumber: string) => {
+  const flightNumberInt = parseInt(flightNumber, 10);
+  return isNaN(flightNumberInt) ? 0 : flightNumberInt % itemImages.length;
+};
+
 export default function Home() {
   const { username } = useLocalSearchParams(); // Extract username from params
   console.log("Username:", username);
-  const [items, setItems] = useState<any[]>([]); // All items
+  const [flights, setFlights] = useState<Flight[]>([]);
   const [loading, setLoading] = useState(true); // Loading state
   const [page, setPage] = useState(1); // Current page
   const [itemsPerPage] = useState(5); // Items per page
   const { clickCount, increment } = useStore();
   const { signOut } = useAuth();
 
-  // Fetch data from API
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch(
-          "https://opensky-network.org/api/states/all",
-        );
-        const data = await response.json();
-        console.log("API Response:", data); // Log the data to check its structure
-        setItems(data.states || []); // Assuming `states` is the correct key
-      } catch (error) {
-        Alert.alert("Error", "Failed to fetch data. Please try again.");
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, []);
+  // Form state
+  const [flightNumber, setFlightNumber] = useState("");
+  const [airlineName, setAirlineName] = useState("");
+  const [date, setDate] = useState(new Date());
+  const [showDatePicker, setShowDatePicker] = useState(false);
+
+  const handleDateChange = (
+    event: NativeSyntheticEvent<DateTimePickerEvent>,
+    selectedDate?: Date,
+  ) => {
+    setShowDatePicker(false);
+    if (selectedDate) {
+      setDate(selectedDate);
+    }
+  };
+
+  // Fetch data from the API
+  const fetchFlights = async () => {
+    if (!flightNumber || !airlineName || !date) {
+      Alert.alert("Error", "Please fill in all fields.");
+      return;
+    }
+
+    const apiKey = "67715aef4cfc5a8e1200ddd5"; // Replace with your API key
+    setLoading(true);
+
+    try {
+      // Format date to YYYYMMDD
+      const formattedDate = date.toISOString().split("T")[0].replace(/-/g, ""); // Remove hyphens from the date
+
+      // Correct API endpoint
+      const response = await fetch(
+        `https://api.flightapi.io/airline/${apiKey}?num=${flightNumber}&name=${airlineName}&date=${formattedDate}`,
+      );
+
+      if (!response.ok)
+        throw new Error(`HTTP error! status: ${response.status}`);
+
+      const data = await response.json();
+      // Log the response to the console
+      console.log("API Response:", JSON.stringify(data, null, 2));
+      setFlights(data || []);
+    } catch (error) {
+      Alert.alert("Error", error.message || "Failed to fetch flight data.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Preprocess flight data to combine departure and arrival
+  const preprocessFlightData = (data: any[]) => {
+    const flights = [];
+
+    const departures = data.flatMap((item) => item.departure || []);
+    const arrivals = data.flatMap((item) => item.arrival || []);
+
+    for (let i = 0; i < Math.min(departures.length, arrivals.length); i++) {
+      flights.push({
+        departure: departures[i],
+        arrival: arrivals[i],
+      });
+    }
+
+    return flights;
+  };
+
+  const processedData = preprocessFlightData(flights); // Use the state data
 
   // Get the current items to display based on the page
-  const currentItems = items.slice(
+  const currentItems = processedData.slice(
     (page - 1) * itemsPerPage,
     page * itemsPerPage,
   );
 
+  // Calculate total pages based on the number of items
+  const totalPages = Math.ceil(processedData.length / itemsPerPage);
+
   // Handle Load More
   const loadMore = () => {
-    if (page * itemsPerPage < items.length) {
+    if (page * itemsPerPage < processedData.length) {
       setPage((prevPage) => prevPage + 1);
     }
   };
@@ -79,9 +169,6 @@ export default function Home() {
     }
   };
 
-  // Calculate total pages based on the number of items
-  const totalPages = Math.ceil(items.length / itemsPerPage);
-
   const handleSignOut = () => {
     signOut();
     router.replace("/(auth)/sign-in");
@@ -89,71 +176,148 @@ export default function Home() {
 
   return (
     <SafeAreaView className="bg-general-500 flex-1">
-      {/* List of flights */}
+      {/* Header */}
+      <View className="flex-row items-center justify-between my-5 mx-5">
+        <Text className="text-3xl capitalize font-JakartaExtraBold">
+          Welcome, {username}! 👋
+        </Text>
+        <TouchableOpacity
+          onPress={handleSignOut}
+          className="w-10 h-10 bg-white rounded-full items-center justify-center"
+        >
+          <Image source={icons.out} className="w-8 h-8" />
+        </TouchableOpacity>
+      </View>
+
+      {/* Form */}
+      <View className="bg-white p-5 rounded-lg shadow mb-4 mt-2 m-5">
+        <Text className="text-2xl font-bold mb-4">Flight Tracking Form</Text>
+        <Text className="mb-2">Flight Number</Text>
+        <TextInput
+          placeholder="Enter Flight Number (e.g., 2459)"
+          value={flightNumber}
+          onChangeText={setFlightNumber}
+          className="border border-gray-300 p-2 rounded mb-3 placeholder:text-gray-400"
+        />
+        <Text className="mb-2">Airline Name</Text>
+        <TextInput
+          placeholder="Enter Airline Name (e.g., AA)"
+          value={airlineName}
+          onChangeText={setAirlineName}
+          className="border border-gray-300 p-2 rounded mb-3 placeholder:text-gray-400"
+        />
+        {/* Date Input with Calendar */}
+        <Text className="mb-2">Date</Text>
+        <TouchableOpacity
+          onPress={() => {
+            Keyboard.dismiss(); // Dismiss the keyboard when opening the date picker
+            setShowDatePicker(true);
+          }}
+        >
+          <TextInput
+            className="border border-gray-300 p-2 rounded mb-3 placeholder:text-gray-400"
+            placeholder="Select date"
+            value={date.toDateString()} // Display the selected date as a string
+            editable={false} // Make the input non-editable to prevent keyboard from showing
+          />
+        </TouchableOpacity>
+
+        {showDatePicker && (
+          <DateTimePicker
+            value={date}
+            mode="date"
+            display={Platform.OS === "ios" ? "spinner" : "default"}
+            onChange={(event, selectedDate) => {
+              setShowDatePicker(false); // Hide the date picker after selection
+              if (selectedDate) {
+                setDate(selectedDate); // Update the selected date
+              }
+            }}
+          />
+        )}
+
+        <TouchableOpacity
+          onPress={fetchFlights}
+          className="bg-blue-500 p-3 rounded"
+        >
+          <Text className="text-white text-center">Fetch Flights</Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* Flight List */}
       <FlatList
         data={currentItems}
-        renderItem={({ item }) => (
+        keyExtractor={(item, index) => `flight-${index}`}
+        ListHeaderComponent={
+          <>
+            <Text className="text-2xl font-bold mb-3 mt-2 mx-2">
+              Flight Results
+            </Text>
+            {/* Only one image displayed here */}
+            <Image
+              source={itemImages[getFlightImageIndex(flightNumber)]}
+              className="w-full h-40 rounded-lg mb-3"
+              resizeMode="cover"
+            />
+          </>
+        }
+        ListEmptyComponent={
+          loading ? (
+            <ActivityIndicator size="small" color="#000" />
+          ) : (
+            <View className="items-center justify-center mt-4">
+              <Image
+                source={images.noResult}
+                className="w-40 h-40"
+                resizeMode="contain"
+              />
+              <Text>No flights found</Text>
+            </View>
+          )
+        }
+        renderItem={({ item, index }) => (
           <TouchableOpacity onPress={increment}>
-            <View className="px-5 py-3 bg-gray-200 mb-5 rounded-lg">
+            <View className="px-5 py-3 bg-gray-200 mb-5 rounded-lg m-4">
               <View className="flex flex-row items-center">
                 <MaterialIcons name="flight" size={20} color="black" />
-                <Text className="font-bold ml-2">
-                  {item[1] || "Unknown Flight"}
+                <Text className="font-bold ml-2 text-xl mb-2">
+                  Flight Leg {index + 1}
                 </Text>
               </View>
-              {/* Display flight name*/}
-              <Text>Origin: {item[2] || "Unknown"}</Text>
-              {/* Display origin*/}
-              <Text>Status: {item[9] ? "In Flight" : "On Ground"}</Text>
-              {/* Flight status */}
-              <Text>Altitude: {item[5] || "N/A"} meters</Text>
-              {/* Altitude */}
-              <Text>Speed: {item[10] || "N/A"} km/h</Text>
-              {/* Speed */}
+              {/* Departure Section */}
+              <Text className="text-lg font-bold mb-2">Departure</Text>
+              <View className="mb-2">
+                <Text>Status: {item.departure["Status:"] || "N/A"}</Text>
+                <Text>Airport: {item.departure["Airport:"] || "N/A"}</Text>
+                <Text>
+                  Scheduled Time: {item.departure["Scheduled Time:"] || "N/A"}
+                </Text>
+                <Text>
+                  Terminal - Gate: {item.departure["Terminal - Gate:"] || "N/A"}
+                </Text>
+              </View>
+              {/* Arrival Section */}
+              <Text className="text-lg font-bold mt-4 mb-2">Arrival</Text>
+              <View className="mb-2">
+                <Text>Status: {item.arrival["Status:"] || "N/A"}</Text>
+                <Text>Airport: {item.arrival["Airport:"] || "N/A"}</Text>
+                <Text>
+                  Scheduled Time: {item.arrival["Scheduled Time:"] || "N/A"}
+                </Text>
+                <Text>
+                  Terminal - Gate: {item.arrival["Terminal - Gate:"] || "N/A"}
+                </Text>
+              </View>
             </View>
           </TouchableOpacity>
         )}
-        keyExtractor={(item) => item[0]?.toString() || Math.random().toString()} // Use the flight ID as key
         keyboardShouldPersistTaps="handled"
-        ListHeaderComponent={() => (
-          <>
-            <View className="flex flex-row items-center justify-between my-5 mx-5">
-              <Text className="text-2xl capitalize font-JakartaExtraBold">
-                Welcome, {username}! 👋
-              </Text>
-              <TouchableOpacity
-                onPress={handleSignOut}
-                className="justify-center items-center w-10 h-10 rounded-full bg-white"
-              >
-                <Image source={icons.out} className="w-4 h-4" />
-              </TouchableOpacity>
-            </View>
-          </>
-        )}
-        ListEmptyComponent={() => (
-          <View className="flex flex-col items-center justify-center">
-            {loading ? (
-              <ActivityIndicator size="small" color="#000" />
-            ) : (
-              <>
-                <Image
-                  source={images.noResult}
-                  className="w-40 h-40"
-                  alt="No recent flights found"
-                  resizeMode="contain"
-                />
-                <Text className="text-sm">No flights found</Text>
-              </>
-            )}
-          </View>
-        )}
         onEndReached={loadMore} // Load more when user reaches the bottom
         onEndReachedThreshold={0.5} // Trigger when the user is 50% from the bottom
         contentContainerStyle={{
           paddingBottom: 10,
         }}
       />
-
       {/* Pagination Bar */}
       <View className="flex flex-row items-center justify-center space-x-4 my-3 gap-x-2">
         <TouchableOpacity
@@ -176,7 +340,6 @@ export default function Home() {
           <Text className="text-white text-center">Next</Text>
         </TouchableOpacity>
       </View>
-
       {/* Floating Button */}
       <TouchableOpacity
         style={{
