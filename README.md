@@ -13,8 +13,12 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
   * Google OAuth integration for easy access.
 
 * Flight Information
-  * Real-time flight data fetched from OpenSky API.
-  * Detailed flight information, including origin, altitude, speed, and status (in-flight or on-ground).
+  * Real-time flight data fetched from AviationStack API.
+  * Detailed flight information, including airline, flight status, departure, and arrival details.
+
+* Search and Filtering
+  * Advanced search functionality to filter flights by name, airline, or departure airport.
+  * Dynamic updates to display relevant results based on user input.
 
 * Pagination and Navigation
   * Smooth and efficient navigation powered by expo-router.
@@ -33,6 +37,11 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
 * Database Integration
   * PostgreSQL database for robust and reliable user data management.
   * Neon serverless technology for scalable and efficient database access.
+
+* Additional Features
+  * Dynamic flight images for enhanced user experience.
+  * Floating action button to showcase interaction with click counters.
+  * Alerts for error handling and better user communication.
 
 
 ## Get started
